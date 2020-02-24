@@ -145,62 +145,6 @@ for i, base_model in enumerate(base_models):
 
 
 
-
-
-
-
-# def train_model(base_model, callbacks, LEARNING_RATE = 1e-3,
-#                 FC_NUMS = 1024,
-#                 TRAINABLE_LAYERS = 10, epochs = 1000,
-#                 batch_size = 32):
-    
-#     for layer in base_model.layers:
-#         layer.trainable = False
-        
-#     IMAGE_SIZE = 224
-#     NUM_CLASSES = 13
-    
-#     x = base_model.output
-#     x = GlobalAveragePooling2D()(x)
-#     x = Dense(FC_NUMS, activation='relu')(x)
-#     x = Dropout(0.05)(x)
-#     # x = Dense(64, activation='relu')(x)
-#     # x = Dropout(0.05)(x)
-#     # x = Dense(32, activation='relu')(x)
-#     # x = Dropout(0.05)(x)
-#     x = Dense(16, activation='relu')(x)
-#     x = Dropout(0.05)(x)
-#     prediction = Dense(NUM_CLASSES, activation='softmax')(x)
-#     model = Model(inputs=base_model.input, outputs=prediction)
-    
-#     for layer in model.layers[-TRAINABLE_LAYERS:]:
-#         layer.trainable = True
-        
-    
-#     model.compile(optimizer=Adam(lr=LEARNING_RATE),
-#               loss='categorical_crossentropy', metrics=['accuracy'])
-    
-#     history = model.fit(X_train, y_train, batch_size=batch_size,
-#                     epochs=epochs, verbose=2,
-#                     validation_data = (X_val, y_val),
-#                    callbacks=callbacks)
-#     model.save('model/model_num'+str(i)+'.h5')
-#     return history, model
-
-# model_list = [
-# MobileNet(weights='imagenet', include_top=False, input_shape=(224, 224, 3)),
-# VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3)),
-# VGG19(weights='imagenet', include_top=False, input_shape=(224, 224, 3)),
-# InceptionV3(weights='imagenet', include_top=False, input_shape=(224, 224, 3)),
-# ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))]
-
-# train_history = []
-# model_history = []
-# for i, model_obj in enumerate(model_list):
-#     history, model = train_model(model_obj, callbacks, i)
-#     train_history.append(history)
-#     model_history.append(model)
-
 for model in model_history:
     print("**********************************")
     result = model.evaluate(X_val, y_val, verbose=0)
