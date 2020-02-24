@@ -17,7 +17,7 @@ class goods_counting_gui:
     def create_gui(self):
         self.window = tk.Tk()
         self.window.title('COMP90055 Bats Classification & Detection - by Yifu Tang')
-        self.label = tk.Label(self.window, text='Current Time：', bg='green', font=30)  # text是要显示的内容
+        self.label = tk.Label(self.window, text='Current Time：', bg='green', font=30)  
         self.label.grid(row=0, column=0)
         self.cur_time = tk.Label(self.window, text='%s%d'%(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S:'),
                                                           datetime.datetime.now().microsecond//100000), font=30)
@@ -79,7 +79,7 @@ class goods_counting_gui:
         frame = cv2.imread(self.path1) # ndarray
         B, G, R = cv2.split(frame)
         frame = cv2.merge([R, G, B])
-        img = Image.fromarray(frame)  # 类型是PIL.Image.Image
+        img = Image.fromarray(frame)  
         img = self.resize(img)
         imgtk = ImageTk.PhotoImage(img)
         self.result_show.config(image=imgtk)
@@ -125,7 +125,7 @@ class goods_counting_gui:
     def resize(self, image):
         im = image
         self.new_size = (800, 800)
-        im.thumbnail(self.new_size,Image.ANTIALIAS)  # thumbnail() 函数是制作当前图片的缩略图, 参数size指定了图片的最大的宽度和高度。
+        im.thumbnail(self.new_size,Image.ANTIALIAS)  
         return im
 
     def LoadImage(self, image):
@@ -172,7 +172,7 @@ class goods_counting_gui:
         frame = plot # ndarray
         B, G, R = cv2.split(frame)
         frame = cv2.merge([R, G, B])
-        img = Image.fromarray(frame)  # 类型是PIL.Image.Image
+        img = Image.fromarray(frame)  
         img = self.resize(img)
         imgtk = ImageTk.PhotoImage(img)
         self.result_show.config(image=imgtk)
@@ -183,8 +183,8 @@ class goods_counting_gui:
         weightsPath = "yolov3_bat_final.weights"
         configPath = "yolov3_bat.cfg"
         labelsPath = "bat.names"
-        LABELS = open(labelsPath).read().strip().split("\n")  # 物体类别
-        COLORS = np.random.randint(0, 255, size=(len(LABELS), 3), dtype="uint8")  # 颜色
+        LABELS = open(labelsPath).read().strip().split("\n")  # Category
+        COLORS = np.random.randint(0, 255, size=(len(LABELS), 3), dtype="uint8")  # Color
         boxes = []
         confidences = []
         classIDs = []
@@ -193,44 +193,40 @@ class goods_counting_gui:
         # print(self.path1)
         (H, W) = image.shape[:2]
 
-        # 得到 YOLO需要的输出层
+        # YOLO output layer
         ln = net.getLayerNames()
         ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-        # 从输入图像构造一个blob，然后通过加载的模型，给我们提供边界框和相关概率
+        # blob to show frame and probability
         blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416), swapRB=True, crop=False)
         net.setInput(blob)
         layerOutputs = net.forward(ln)
 
-        # 在每层输出上循环
         for output in layerOutputs:
-            # 对每个检测进行循环
             for detection in output:
                 scores = detection[5:]
                 classID = np.argmax(scores)
                 confidence = scores[classID]
-                # 过滤掉那些置信度较小的检测结果
+                # read confidence threshold
                 con = self.confidence.get()
                 if confidence >= float(con):
-                    # 框后接框的宽度和高度
                     box = detection[0:4] * np.array([W, H, W, H])
                     (centerX, centerY, width, height) = box.astype("int")
-                    # 边框的左上角
+                    # left top
                     x = int(centerX - (width / 2))
                     y = int(centerY - (height / 2))
-                    # 更新检测出来的框
+                    # uodate the frame
                     boxes.append([x, y, int(width), int(height)])
                     confidences.append(float(confidence))
                     classIDs.append(classID)
 
-        # 极大值抑制
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, 0.2, 0.3)
         # print('idxs =', idxs)
         if len(idxs) > 0:
-            for i in idxs.flatten():  # 把一列拉成一行,比如[[1] \ [0] \[2] ]  变成[1 0 2 ]
+            for i in idxs.flatten(): 
                 (x, y) = (boxes[i][0], boxes[i][1])
                 (w, h) = (boxes[i][2], boxes[i][3])
-                # 在原图上绘制边框和类别
+                # show frame and category
                 color = [int(c) for c in COLORS[classIDs[i]]]
                 cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
                 text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
@@ -240,7 +236,7 @@ class goods_counting_gui:
         frame = image # ndarray
         B, G, R = cv2.split(frame)
         frame = cv2.merge([R, G, B])
-        img = Image.fromarray(frame)  # 类型是PIL.Image.Image
+        img = Image.fromarray(frame) 
         img = self.resize(img)
         imgtk = ImageTk.PhotoImage(img)
         self.result_show.config(image=imgtk)
